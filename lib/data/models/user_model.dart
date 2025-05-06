@@ -9,7 +9,7 @@ class UserModel {
   final bool isOnline;
   final Timestamp lastSeen;
   final Timestamp createdAt;
-  final String fcmToken;
+  final String? fcmToken;
   final List<String> blockedUser;
 
   UserModel(
@@ -21,13 +21,22 @@ class UserModel {
       this.isOnline = false,
       Timestamp? lastSeen,
       Timestamp? createdAt,
-      required this.fcmToken,
+      this.fcmToken,
       this.blockedUser = const []})
       : lastSeen = lastSeen ?? Timestamp.now(),
         createdAt = createdAt ?? Timestamp.now();
 
   UserModel copyWith(
-      {String? uid, String? userName, String? fullName, String? email, String? phoneNumber, bool? isOnline, Timestamp? lastSeen, Timestamp? createdAt, String? fcmToken, List<String>? blockedUser}) {
+      {String? uid,
+      String? userName,
+      String? fullName,
+      String? email,
+      String? phoneNumber,
+      bool? isOnline,
+      Timestamp? lastSeen,
+      Timestamp? createdAt,
+      String? fcmToken,
+      List<String>? blockedUser}) {
     return UserModel(
       uid: uid ?? this.uid,
       userName: this.userName,
@@ -40,5 +49,34 @@ class UserModel {
       fcmToken: this.fcmToken,
       blockedUser: blockedUser ?? this.blockedUser,
     );
+  }
+
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+        uid: doc.id,
+        userName: data["userName"],
+        fullName: data["fullName"],
+        email: data["email"],
+        phoneNumber: data["phoneNumber"],
+        isOnline: data["isOnline"],
+        lastSeen: data["lastSeen"],
+        createdAt: data["createdAt"],
+        blockedUser: data["blockedUser"],
+        fcmToken: data["fcmToken"]);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "userName": userName,
+      "email": email,
+      "fullName": fullName,
+      "phoneNumber": phoneNumber,
+      "isOnline": isOnline,
+      "lastSeen": lastSeen,
+      "createdAt": createdAt,
+      "blockedUser": blockedUser,
+      "fcmToken": fcmToken,
+    };
   }
 }
